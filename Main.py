@@ -60,3 +60,24 @@ ax.view_init(elev=20, azim=45)
 
 plt.tight_layout()
 plt.show()
+
+# feature matrix to determine which has the most impact on performance
+
+correlations = training_data.corr()['Answered_Correctly'].drop(['Answered_Correctly', 'Correct_Response', 'Actual_Response']).abs().sort_values(ascending=True)
+
+plt.figure(figsize=(13, 6))
+colors = ['#ff7f0e' if x < 0.05 else '#1f77b4' for x in correlations.values]
+
+bars = plt.barh(correlations.index, correlations.values, color=colors)
+
+plt.xlabel('Importance (Absolute Correlation Coefficient)')
+plt.title('Feature Importance: What Drives Task Performance?')
+plt.grid(axis='x', linestyle='--', alpha=0.7)
+
+for bar in bars:
+    width = bar.get_width()
+    plt.text(width + 0.005, bar.get_y() + bar.get_height()/2, 
+             f'{width:.4f}', va='center')
+
+plt.tight_layout()
+plt.show()
