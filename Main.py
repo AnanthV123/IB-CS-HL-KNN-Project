@@ -7,24 +7,48 @@ from sklearn.discriminant_analysis import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 
+# importing the csv file into a pandas dataframe
 training_data = pd.read_csv('Dataset - Final KNN Dataset.csv')
 training_labels = training_data.columns.tolist()
 
-# feature: music, target: performance
-x = training_data[['Is_Calming_Music', 'Difficulty', 'Response_Time']]
+# feature: music, difficulty, response time; target: performance of the test subject
+# goal: determine the effect of music on task performance in the context of the task difficulty and subject's response time
+X = training_data[['Is_Calming_Music', 'Difficulty', 'Response_Time']]
 y = training_data['Answered_Correctly']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.9, random_state=42)
-
+# scaling data to ensure that all features are given the same importance
 scaler = StandardScaler()
-x_train_scaled = scaler.fit_transform(x_train)
-x_test_scaled = scaler.transform(x_test)
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
 
-knn = KNeighborsClassifier(n_neighbors=1)
-knn.fit(x_train_scaled, y_train)
+knn = KNeighborsClassifier(n_neighbors=3)
+knn.fit(X_train_scaled, y_train)
 
-y_pred = knn.predict(x_test_scaled)
+y_pred = knn.predict(X_test_scaled)
 
+
+neighbors = np.arange(1, 9)
+train_accuracy = np.empty(len(neighbors))
+test_accuracy = np.empty(len(neighbors))
+
+# Loop over K values
+for i, k in enumerate(neighbors):
+	knn = KNeighborsClassifier(n_neighbors=k)
+	knn.fit(X_train_scaled, y_train)
+	
+	# Compute training and test data accuracy
+	train_accuracy[i] = knn.score(X_train_scaled, y_train)
+	test_accuracy[i] = knn.score(X_test_scaled, y_test)
+
+# Generate plot
+plt.plot(neighbors, test_accuracy, label = 'Testing dataset Accuracy')
+plt.plot(neighbors, train_accuracy, label = 'Training dataset Accuracy')
+
+plt.legend()
+plt.xlabel('n_neighbors')
+plt.ylabel('Accuracy')
+plt.show()
 
 # graphing the prediction
 fig = plt.figure(figsize=(10, 7))
@@ -71,7 +95,7 @@ colors = ['#ff7f0e' if x < 0.05 else '#1f77b4' for x in correlations.values]
 bars = plt.barh(correlations.index, correlations.values, color=colors)
 
 plt.xlabel('Importance (Absolute Correlation Coefficient)')
-plt.title('Feature Importance: What Drives Task Performance?')
+plt.title('Feature Importance')
 plt.grid(axis='x', linestyle='--', alpha=0.7)
 
 for bar in bars:
