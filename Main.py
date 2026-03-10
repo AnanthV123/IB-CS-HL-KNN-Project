@@ -22,14 +22,13 @@ scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
-knn = KNeighborsClassifier(n_neighbors=3)
+knn = KNeighborsClassifier(n_neighbors=7)
 knn.fit(X_train_scaled, y_train)
 
 y_pred = knn.predict(X_test_scaled)
 
 
 neighbors = np.arange(1, 9)
-train_accuracy = np.empty(len(neighbors))
 test_accuracy = np.empty(len(neighbors))
 
 # Loop over K values
@@ -37,13 +36,11 @@ for i, k in enumerate(neighbors):
 	knn = KNeighborsClassifier(n_neighbors=k)
 	knn.fit(X_train_scaled, y_train)
 	
-	# Compute training and test data accuracy
-	train_accuracy[i] = knn.score(X_train_scaled, y_train)
+	# Compute test data accuracy
 	test_accuracy[i] = knn.score(X_test_scaled, y_test)
 
 # Generate plot
 plt.plot(neighbors, test_accuracy, label = 'Testing dataset Accuracy')
-plt.plot(neighbors, train_accuracy, label = 'Training dataset Accuracy')
 
 plt.legend()
 plt.xlabel('n_neighbors')
