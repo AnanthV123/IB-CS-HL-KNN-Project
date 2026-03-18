@@ -52,29 +52,26 @@ data["Letter"] = data["Letter_Ascii"].apply(chr)
 
 letter_performance = data.groupby("Letter")["Answered_Correctly"].mean()
 
-print("\nPerformance by Letter:")
-print(letter_performance)
-
 import matplotlib.pyplot as plt
 
 plt.figure()
 
-letter_performance.sort_values(ascending=False).plot(kind="bar")
+letter_performance.sort_values(ascending=False).plot(kind="line")
 
 plt.title("Recall Performance by Stimulus Letter")
 plt.xlabel("Letter")
 plt.ylabel("Average Performance (Accuracy)")
 plt.ylim(0,1)
-
+plt.xticks(range(len(letter_performance)), letter_performance.index)
 plt.show()
 
-letter_performance.plot(kind="bar")
+letter_performance.plot(kind="line")
 
 plt.title("Recall Performance by Stimulus Letter")
 plt.xlabel("Letter")
 plt.ylabel("Average Recall Accuracy")
 plt.ylim(0,1)
-
+plt.xticks(range(len(letter_performance)), letter_performance.index)
 plt.show()
 
 data["Answered_Correctly"].value_counts().plot(kind="bar")
